@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_news"
+            android:icon="@drawable/vector_drawable_icon_manchetes"
+            android:title="Manchetes da Semana" />
+        <item
+            android:id="@+id/nav_videos"
+            android:icon="@drawable/vector_drawable_icon_podcasts"
+            android:title="Vídeos" />
+        <item
+            android:id="@+id/nav_aboutus"
+            android:icon="@drawable/vector_drawable_icon_sobrenos"
+            android:title="Sobre nós" />
+        <item
+            android:id="@+id/nav_contact"
+            android:icon="@drawable/vector_drawable_icon_contato"
+            android:title="Contato" />
+        <item
+            android:id="@+id/nav_partiners"
+            android:icon="@drawable/vector_drawable_icon_avatar"
+            android:title="Patrocinado" />
+    </group>
+
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/vector_drawable_icon_logout"
+                android:title="Sair" />
+        </menu>
+    </item>
+
+</menu>

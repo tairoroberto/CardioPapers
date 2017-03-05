@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "524306968723",
+    "project_id": "cardiopapers-android"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524306968723:android:11a3d5467053a6d8",
+        "android_client_info": {
+          "package_name": "br.com.trmasolucoes.cardiopapers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD0uE37UrTiBZYsS8ULtmIG7Uht6XoOfU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-86556310-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

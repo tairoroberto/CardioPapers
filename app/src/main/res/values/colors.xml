@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#328DE8</color>
+    <color name="colorPrimaryDark">#328DE8</color>
+    <color name="colorAccent">#328DE8</color>
+
+    <color name="colorDanger">#f53d3d</color>
+    <color name="colorLight">#f4f4f4</color>
+    <color name="colorDark">#222</color>
+    <color name="colorTabs">#103B66</color>
+    <color name="colorToobar">#328DE8</color>
+    <color name="colorCategories">#3F94E9</color>
+    <color name="colorPostTitle">#103B66</color>
+    <color name="colorDatePost">#5F7B98</color>
+    <color name="colorButton">#42B3FF</color>
+    <color name="colorMenuSide">#4899EA</color>
+    <color name="colorPostsBackground">#F0F0F0</color>
+    <color name="colorRegistryTitle">#328DE8</color>
+    <color name="colorFacebookColor">#45619C</color>
+    <color name="colorTwiterColor">#00ACEE</color>
+    <color name="colorGoogleColor">#DC4E41</color>
+    <color name="colorYoutubeColor">#C4302B</color>
+    <color name="colorLinkedinColor">#1D87BD</color>
+    <color name="colorPrimarytext">#212121</color>
+    <color name="colorSecondText">#727272</color>
+    <color name="colorLabel">#2C78AA</color>
+    <color name="divider">#e0e0e0</color>
+</resources>
