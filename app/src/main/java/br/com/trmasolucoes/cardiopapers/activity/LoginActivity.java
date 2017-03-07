@@ -1,4 +1,4 @@
-package br.com.trmasolucoes.cardiopapers;
+package br.com.trmasolucoes.cardiopapers.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -30,6 +30,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.trmasolucoes.cardiopapers.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

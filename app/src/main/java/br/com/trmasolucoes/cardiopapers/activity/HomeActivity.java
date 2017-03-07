@@ -1,4 +1,4 @@
-package br.com.trmasolucoes.cardiopapers;
+package br.com.trmasolucoes.cardiopapers.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -6,10 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
@@ -23,10 +20,8 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.android.volley.RequestQueue;
@@ -34,9 +29,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +36,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.trmasolucoes.cardiopapers.R;
 import br.com.trmasolucoes.cardiopapers.adapter.DrawerAdapter;
 import br.com.trmasolucoes.cardiopapers.adapter.PostAdapter;
 import br.com.trmasolucoes.cardiopapers.database.PostCommentDAO;
@@ -67,6 +60,8 @@ public class HomeActivity extends AppCompatActivity {
     private PostCommentDAO postCommentDAO;
     private ProgressDialog progressDialog;
     private String before_post = "";
+    private FloatingActionButton fab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -86,12 +81,11 @@ public class HomeActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                mRecyclerView.smoothScrollToPosition(0);
             }
         });
 
@@ -125,15 +119,9 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-
-
-
-
 
         if (savedInstanceState != null) {
             posts = savedInstanceState.getParcelableArrayList("posts");
@@ -176,12 +164,21 @@ public class HomeActivity extends AppCompatActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
+                int position = mLayoutManager.findLastVisibleItemPosition();
+                if (position <= 5) {
+                    fab.setVisibility(View.GONE);
+                }
+
+                if (position > 5 && fab.getVisibility() == View.GONE) {
+                    fab.setVisibility(View.VISIBLE);
+                }
+
                 if (dy > 0 && getConnection()) { //check for scroll down
 
                     /** Verifico se é o ultimos post pra carrregar mais do servidor */
                     if (posts.size() == mLayoutManager.findFirstCompletelyVisibleItemPosition() + 1) {
 
-                        if (before_post.equals("")){
+                        if (before_post.equals("")) {
                             before_post = posts.get(posts.size() - 1).getDate();
                         }
 
@@ -258,16 +255,16 @@ public class HomeActivity extends AppCompatActivity {
 
         progressDialog.show();
         /** Se tem conexão copm a intertnet eu busco os posts no servidor */
-        if (getConnection()){
+        if (getConnection()) {
             RequestQueue mRequestQueue = Volley.newRequestQueue(HomeActivity.this);
             final String url = "https://cardiopapers.com.br/control/wp-feed-api.php?" + limit + start + before + category + id;
             JsonArrayRequest JSONArrayRequest = new JsonUTF8Request(url, new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    Log.i(TAG, "COUNT: "+ response.length() +"URL: " + url);
+                    Log.i(TAG, "COUNT: " + response.length() + "URL: " + url);
 
                     /** Verifico se é pra deletar os posts */
-                    if (delete){
+                    if (delete) {
                         postDAO.deleteDate();
                     }
 
@@ -289,7 +286,7 @@ public class HomeActivity extends AppCompatActivity {
                             post.setTumbnail(response.getJSONObject(i).getString("post_tumbnail"));
                             post.setTumbnailMedium(response.getJSONObject(i).getString("post_tumbnail_medium"));
                             post.setTumbnailLarge(response.getJSONObject(i).getString("post_tumbnail_large"));
-                            post.setUserImage(response.getJSONObject(i).getString("user_image"));
+                            post.setUserImage(response.getJSONObject(i).getString("userImage"));
 
                             JSONArray comments = response.getJSONObject(i).getJSONArray("comments");
                             for (int j = 0; j < comments.length(); j++) {
@@ -314,7 +311,7 @@ public class HomeActivity extends AppCompatActivity {
                         /** Se for buscar pela primeira vez eu limpo os posts */
                         if (!before.equals("")) {
                             postsAux.add(post);
-                        }else {
+                        } else {
                             posts.add(post);
                         }
 
@@ -337,7 +334,7 @@ public class HomeActivity extends AppCompatActivity {
 
             // Access the RequestQueue through your singleton class.
             mRequestQueue.add(JSONArrayRequest);
-        }else {
+        } else {
 
             /** carrego os posts da base de dados */
             posts = postDAO.getAll();
@@ -347,7 +344,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public  boolean getConnection() {
+    public boolean getConnection() {
         boolean conectado;
         ConnectivityManager conectivtyManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         conectado = conectivtyManager.getActiveNetworkInfo() != null

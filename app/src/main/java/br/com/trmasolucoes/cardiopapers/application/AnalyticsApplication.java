@@ -1,4 +1,4 @@
-package br.com.trmasolucoes.cardiopapers;
+package br.com.trmasolucoes.cardiopapers.application;
 
 
 import android.app.Application;
@@ -9,6 +9,8 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
 import java.util.HashMap;
+
+import br.com.trmasolucoes.cardiopapers.R;
 
 /**
  * Created by tairo on 30/10/16.

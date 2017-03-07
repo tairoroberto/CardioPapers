@@ -1,4 +1,4 @@
-package br.com.trmasolucoes.cardiopapers;
+package br.com.trmasolucoes.cardiopapers.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -36,6 +36,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
+import br.com.trmasolucoes.cardiopapers.R;
 import br.com.trmasolucoes.cardiopapers.adapter.CommentAdapter;
 import br.com.trmasolucoes.cardiopapers.database.PostCommentDAO;
 import br.com.trmasolucoes.cardiopapers.model.Post;

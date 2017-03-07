@@ -1,4 +1,4 @@
-package br.com.trmasolucoes.cardiopapers;
+package br.com.trmasolucoes.cardiopapers.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
+import br.com.trmasolucoes.cardiopapers.R;
 
 public class SplashActivity extends Activity {
 

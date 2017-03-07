@@ -1,12 +1,11 @@
 package br.com.trmasolucoes.cardiopapers.util;
 
 import android.app.Activity;
-import android.content.Context;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import br.com.trmasolucoes.cardiopapers.AnalyticsApplication;
+import br.com.trmasolucoes.cardiopapers.application.AnalyticsApplication;
 
 /**
  * Created by tairo on 05/03/17.

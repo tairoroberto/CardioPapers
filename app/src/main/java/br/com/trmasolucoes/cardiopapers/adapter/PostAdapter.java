@@ -73,9 +73,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
 
-        myViewHolder.txt_title.setText(mList.get(position).getTitle());
-        myViewHolder.txt_date.setText(mList.get(position).getDate());
-        myViewHolder.txt_creator.setText(mList.get(position).getDisplay_name());
+        myViewHolder.txtTitle.setText(mList.get(position).getTitle());
+        myViewHolder.txtDate.setText(mList.get(position).getDate());
+        myViewHolder.txtCategories.setText("Insuficiência Cardíaca • Semiologia • Valvopatias");
 
         /** Controle de cache para imagem*/
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -93,23 +93,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
         /** User image */
         if (mList.get(position).getUserImage() != null){
-            picasso.load(mList.get(position).getUserImage()).into(myViewHolder.user_image);
+            picasso.load(mList.get(position).getUserImage()).into(myViewHolder.userImage);
         }else {
-            picasso.load(R.drawable.logo_3).into(myViewHolder.user_image);
+            picasso.load(R.drawable.foto_user).into(myViewHolder.userImage);
         }
-        if (myViewHolder.user_image.getDrawable() == null){
-            Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.logo_3);
-            myViewHolder.user_image.setImageBitmap(bitmap);
+
+        if (myViewHolder.userImage.getDrawable() == null){
+            Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.foto_user);
+            myViewHolder.userImage.setImageBitmap(bitmap);
         }
 
         /** Post image */
         if (mList.get(position).getTumbnailMedium() != null && !mList.get(position).getTumbnailMedium().equalsIgnoreCase("")){
-            picasso.load(mList.get(position).getTumbnailMedium()).into(myViewHolder.img_post);
+            picasso.load(mList.get(position).getTumbnailMedium()).into(myViewHolder.imgPost);
         }
 
-        if (myViewHolder.img_post.getDrawable() == null){
+        if (myViewHolder.imgPost.getDrawable() == null){
             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.logo_3);
-            myViewHolder.img_post.setImageBitmap(bitmap);
+            myViewHolder.imgPost.setImageBitmap(bitmap);
         }
 
         if(withAnimation){
@@ -139,20 +140,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public AvatarImageView user_image;
-        public ImageView img_post;
-        public TextView txt_title;
-        public TextView txt_date;
-        public TextView txt_creator;
+        public AvatarImageView userImage;
+        public ImageView imgPost;
+        public TextView txtTitle;
+        public TextView txtDate;
+        public TextView txtCategories;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            user_image = (AvatarImageView) itemView.findViewById(R.id.user_image);
-            img_post = (ImageView) itemView.findViewById(R.id.img_post_detalhe);
-            txt_title = (TextView) itemView.findViewById(R.id.txt_title);
-            txt_date = (TextView) itemView.findViewById(R.id.txt_date);
-            txt_creator = (TextView) itemView.findViewById(R.id.txt_creator);
+            userImage = (AvatarImageView) itemView.findViewById(R.id.user_image);
+            imgPost = (ImageView) itemView.findViewById(R.id.img_post_detalhe);
+            txtTitle = (TextView) itemView.findViewById(R.id.txt_title);
+            txtDate = (TextView) itemView.findViewById(R.id.txt_date);
+            txtCategories = (TextView) itemView.findViewById(R.id.categories);
         }
     }
 }

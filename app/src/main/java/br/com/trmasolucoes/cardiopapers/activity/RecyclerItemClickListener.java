@@ -1,4 +1,4 @@
-package br.com.trmasolucoes.cardiopapers;
+package br.com.trmasolucoes.cardiopapers.activity;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

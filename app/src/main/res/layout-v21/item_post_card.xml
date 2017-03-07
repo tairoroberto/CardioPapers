@@ -13,76 +13,92 @@
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="false">
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/categories"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:lines="1"
+            android:text="Emergencias - Henmodinamicas"
+            android:textColor="@color/colorCategories"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_post_detalhe"
+            app:layout_constraintLeft_toRightOf="@+id/user_image"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintHorizontal_bias="0.5" />
 
         <TextView
             android:id="@+id/txt_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/img_post_detalhe"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:lines="2"
             android:maxLines="3"
-            android:paddingBottom="10dp"
-            android:paddingLeft="16dp"
-            android:paddingTop="10dp"
-            android:textColor="@color/colorPrimarytext"
+            android:textColor="@color/colorPostTitle"
             android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toRightOf="@+id/user_image"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/categories"
             tools:text="Conteudo do post" />
 
         <cn.carbs.android.avatarimageview.library.AvatarImageView
             android:id="@+id/user_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:padding="5dp"
             app:aiv_BoarderWidth="2dp"
             app:aiv_ShowBoarder="false"
-            app:aiv_TextSizeRatio="0.4" />
+            app:aiv_TextSizeRatio="0.4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_post_detalhe"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
             android:id="@+id/img_post_detalhe"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="200dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/user_image"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/logo_3" />
+            android:src="@drawable/livro_ecg"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0.0" />
 
         <TextView
             android:id="@+id/txt_date"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/img_post_detalhe"
-            android:layout_marginBottom="14dp"
-            android:layout_toEndOf="@+id/user_image"
-            android:layout_toRightOf="@+id/user_image"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="4dp"
+            android:lines="1"
             android:maxLines="1"
-            android:paddingLeft="16dp"
-            android:textAlignment="textStart"
-            android:textColor="@color/colorSecondText"
+            android:textColor="@color/colorDatePost"
             android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toRightOf="@+id/user_image"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_title"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="2016-10-20 06:20:59" />
 
-        <TextView
-            android:id="@+id/txt_creator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/txt_date"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_toEndOf="@+id/user_image"
-            android:layout_toRightOf="@+id/user_image"
-            android:maxLines="1"
-            android:paddingLeft="16dp"
-            android:textAlignment="textStart"
-            android:textColor="@color/colorPrimarytext"
-            android:textSize="14sp"
-            tools:text="Author" />
-
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
