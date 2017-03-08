@@ -21,8 +21,14 @@ import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -61,6 +67,36 @@ public class HomeActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private String before_post = "";
     private FloatingActionButton fab;
+    private AutoCompleteTextView edtSearch;
+    private ListView mDrawerList;
+    private DrawerLayout drawer;
+
+    private static final String[] COUNTRIES = new String[]{
+            "Sem categoria",
+            "Coronariopatia",
+            "Prevenção",
+            "ECG",
+            "Terapia Intensiva Cardiológica",
+            "Perioperatório",
+            "Arritmia",
+            "Insuficiência Cardíaca",
+            "Miscelânia",
+            "Lípides",
+            "Métodos complementares",
+            "Hipertensão arterial sistêmica",
+            "Congênitas",
+            "Emergências",
+            "Valvopatias",
+            "Pericardiopatias",
+            "Semiologia",
+            "Hemodinâmica",
+            "Manchetes da Semana",
+            "Nefrologia",
+            "Podcast",
+            "Marcapasso",
+            "Video Aulas",
+            "Imagem cardiovascular"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +116,24 @@ public class HomeActivity extends AppCompatActivity {
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        edtSearch = (AutoCompleteTextView) findViewById(R.id.edtSearch);
+
+        ArrayAdapter<String> adapterAutoComplete = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+        edtSearch.setAdapter(adapterAutoComplete);
+
+        edtSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView textView = (TextView) view;
+
+                Toast.makeText(HomeActivity.this, textView.getText().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,8 +141,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         list.add(new ItemDrawer("", R.drawable.vector_drawable_icon_manchetes, false));
         list.add(new ItemDrawer("Manchetes da Semana", R.drawable.vector_drawable_icon_manchetes, true));

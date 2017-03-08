@@ -30,4 +30,6 @@
     <string name="txtwebsite">Website</string>
     <string name="txtLogin">Login</string>
     <string name="txtSenha">Senha</string>
+    <string name="last_updates">Útilmas atualizações</string>
+    <string name="search_posts">Procurar artigos</string>
 </resources>
