@@ -46,12 +46,18 @@ public class DBCore extends SQLiteOpenHelper {
                 + "date text null,"
                 + "content text not null,"
                 + "parent integer );");
+
+        db.execSQL("create table categories("
+                + "_id integer primary key autoincrement,"
+                + "post_id integer not null,"
+                + "name text not null );");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("drop table posts");
         db.execSQL("drop table comments");
+        db.execSQL("drop table categories");
         onCreate(db);
     }
 }

@@ -45,8 +45,10 @@ import java.util.List;
 import br.com.trmasolucoes.cardiopapers.R;
 import br.com.trmasolucoes.cardiopapers.adapter.DrawerAdapter;
 import br.com.trmasolucoes.cardiopapers.adapter.PostAdapter;
+import br.com.trmasolucoes.cardiopapers.database.CategoryDAO;
 import br.com.trmasolucoes.cardiopapers.database.PostCommentDAO;
 import br.com.trmasolucoes.cardiopapers.database.PostDAO;
+import br.com.trmasolucoes.cardiopapers.model.Category;
 import br.com.trmasolucoes.cardiopapers.model.ItemDrawer;
 import br.com.trmasolucoes.cardiopapers.model.Post;
 import br.com.trmasolucoes.cardiopapers.model.PostComment;
@@ -64,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
     private LinearLayoutManager mLayoutManager;
     private PostDAO postDAO;
     private PostCommentDAO postCommentDAO;
+    private CategoryDAO categoryDAO;
     private ProgressDialog progressDialog;
     private String before_post = "";
     private FloatingActionButton fab;
@@ -185,6 +188,7 @@ public class HomeActivity extends AppCompatActivity {
 
         postDAO = new PostDAO(HomeActivity.this);
         postCommentDAO = new PostCommentDAO(HomeActivity.this);
+        categoryDAO = new CategoryDAO(HomeActivity.this);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
         mRecyclerView.setHasFixedSize(true);
 
@@ -305,23 +309,26 @@ public class HomeActivity extends AppCompatActivity {
     private void loadPosts(String limit, final String start, final String before, String category, String id, final boolean delete) {
 
         progressDialog.show();
-        /** Se tem conexão copm a intertnet eu busco os posts no servidor */
+
+        /* Se tem conexão copm a intertnet eu busco os posts no servidor */
         if (getConnection()) {
             RequestQueue mRequestQueue = Volley.newRequestQueue(HomeActivity.this);
             final String url = "https://cardiopapers.com.br/control/wp-feed-api.php?" + limit + start + before + category + id;
             JsonArrayRequest JSONArrayRequest = new JsonUTF8Request(url, new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    Log.i(TAG, "COUNT: " + response.length() + "URL: " + url);
+                    Log.i(TAG, "COUNT: " + response.length() + " \nURL: " + url);
 
-                    /** Verifico se é pra deletar os posts */
+                    /* Verifico se é pra deletar os posts */
                     if (delete) {
                         postDAO.deleteDate();
                     }
 
                     for (int i = 0; i < response.length(); i++) {
                         Post post = new Post();
-                        ArrayList<PostComment> listComments = new ArrayList<>();
+                        List<PostComment> listComments =  new ArrayList<>();
+                        List<Category> categories = new ArrayList<>();
+
                         try {
                             post.setPostId(response.getJSONObject(i).getInt("ID"));
                             post.setAuthor(response.getJSONObject(i).getString("post_author"));
@@ -337,8 +344,9 @@ public class HomeActivity extends AppCompatActivity {
                             post.setTumbnail(response.getJSONObject(i).getString("post_tumbnail"));
                             post.setTumbnailMedium(response.getJSONObject(i).getString("post_tumbnail_medium"));
                             post.setTumbnailLarge(response.getJSONObject(i).getString("post_tumbnail_large"));
-                            post.setUserImage(response.getJSONObject(i).getString("userImage"));
+                            post.setUserImage(response.getJSONObject(i).getString("user_image"));
 
+                            /* Comments */
                             JSONArray comments = response.getJSONObject(i).getJSONArray("comments");
                             for (int j = 0; j < comments.length(); j++) {
                                 PostComment postComment = new PostComment();
@@ -353,13 +361,24 @@ public class HomeActivity extends AppCompatActivity {
                                 postCommentDAO.insert(postComment);
                                 listComments.add(postComment);
                             }
-                            post.setComments(listComments);
+
+                            /* Categories */
+                            JSONArray categoriesArray = response.getJSONObject(i).getJSONArray("categories");
+                            for (int j = 0; j < categoriesArray.length(); j++) {
+                                Category category = new Category();
+                                category.setPostId(post.getPostId());
+                                category.setName(categoriesArray.getJSONObject(j).getString("name"));
+
+                                categoryDAO.insert(category);
+                                categories.add(category);
+                            }
+                            post.setCategories(categories);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        /** Se for buscar pela primeira vez eu limpo os posts */
+                        /* Se for buscar pela primeira vez eu limpo os posts */
                         if (!before.equals("")) {
                             postsAux.add(post);
                         } else {
@@ -387,7 +406,7 @@ public class HomeActivity extends AppCompatActivity {
             mRequestQueue.add(JSONArrayRequest);
         } else {
 
-            /** carrego os posts da base de dados */
+            /* carrego os posts da base de dados */
             posts = postDAO.getAll();
             PostAdapter postAdapter = new PostAdapter(HomeActivity.this, posts);
             mRecyclerView.setAdapter(postAdapter);

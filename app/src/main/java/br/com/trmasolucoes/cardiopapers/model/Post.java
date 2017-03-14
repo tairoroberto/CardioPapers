@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Post implements Parcelable {
     private long id;
@@ -26,11 +27,12 @@ public class Post implements Parcelable {
     private String userImage;
     private Date created_at;
     private ArrayList<PostComment> comments;
+    private List<Category> categories;
 
     public Post() {
     }
 
-    public Post(long id, int postId, String author, String date, String title, String content, String content_filtered, String status, String guid, int commmentCount, String display_name, String metaImage, String tumbnail, String tumbnailMedium, String tumbnailLarge, String userImage, Date created_at, ArrayList<PostComment> comments) {
+    public Post(long id, int postId, String author, String date, String title, String content, String content_filtered, String status, String guid, int commmentCount, String display_name, String metaImage, String tumbnail, String tumbnailMedium, String tumbnailLarge, String userImage, Date created_at, ArrayList<PostComment> comments, List<Category> categories) {
         this.id = id;
         this.postId = postId;
         this.author = author;
@@ -49,6 +51,7 @@ public class Post implements Parcelable {
         this.userImage = userImage;
         this.created_at = created_at;
         this.comments = comments;
+        this.categories = categories;
     }
 
     public long getId() {
@@ -195,6 +198,14 @@ public class Post implements Parcelable {
         this.comments = comments;
     }
 
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
+    }
+
     protected Post(Parcel in) {
         id = in.readLong();
         postId = in.readInt();
@@ -214,8 +225,10 @@ public class Post implements Parcelable {
         userImage = in.readString();
         long tmpDate = in.readLong();
         created_at = tmpDate == -1 ? null : new Date(tmpDate);
-        comments = new ArrayList<PostComment>();
+        comments = new ArrayList<>();
         in.readTypedList(comments, PostComment.CREATOR);
+        categories = new ArrayList<>();
+        in.readTypedList(categories, Category.CREATOR);
     }
 
     public static final Creator<Post> CREATOR = new Creator<Post>() {
@@ -255,5 +268,6 @@ public class Post implements Parcelable {
         dest.writeString(userImage);
         dest.writeLong(created_at != null ? created_at.getTime() : -1);
         dest.writeTypedList(comments);
+        dest.writeTypedList(categories);
     }
 }

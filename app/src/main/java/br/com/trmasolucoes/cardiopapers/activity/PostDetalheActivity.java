@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -34,13 +36,16 @@ import com.squareup.okhttp.Response;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
 
 import br.com.trmasolucoes.cardiopapers.R;
 import br.com.trmasolucoes.cardiopapers.adapter.CommentAdapter;
 import br.com.trmasolucoes.cardiopapers.database.PostCommentDAO;
 import br.com.trmasolucoes.cardiopapers.model.Post;
-import me.drakeet.materialdialog.MaterialDialog;
 
 
 public class PostDetalheActivity extends AppCompatActivity {
@@ -48,7 +53,6 @@ public class PostDetalheActivity extends AppCompatActivity {
     private ScrollView content_feed;
     private Toolbar mToolbar;
     private Post post;
-    private MaterialDialog mMaterialDialog;
     private TextView tvDescription;
     private ImageView img_feed;
     private TextView txt_title;
@@ -59,6 +63,9 @@ public class PostDetalheActivity extends AppCompatActivity {
     private WebView webviewFeed;
     private PostCommentDAO postCommentDAO;
     private ListView commentList;
+    private String element;
+    private Document document;
+    private Elements elements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +158,7 @@ public class PostDetalheActivity extends AppCompatActivity {
         //Carrega a imagem
         picasso.load(post.getTumbnailLarge()).into(img_feed);
 
-        if (img_feed.getDrawable() == null){
+        if (img_feed.getDrawable() == null) {
             Bitmap bitmap = BitmapFactory.decodeResource(PostDetalheActivity.this.getResources(), R.drawable.logo_3);
             img_feed.setImageBitmap(bitmap);
         }
@@ -164,11 +171,20 @@ public class PostDetalheActivity extends AppCompatActivity {
         webviewFeed.getSettings().setUserAgentString("Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3");
         webviewFeed.getSettings().setAppCacheEnabled(true);
 
-        if (post.getTumbnailLarge() != null){
-            webviewFeed.loadData(post.getContent(), "text/html; charset=UTF-8", null);
-        }
 
-        if (post.getComments().size() > 0){
+        webviewFeed.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+        });
+        WebSettings webSettings = webviewFeed.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        PostHtmlRequest postHtmlRequest = new PostHtmlRequest();
+        postHtmlRequest.execute(post.getGuid());
+
+
+        if (post.getComments().size() > 0) {
             commentList.setVisibility(View.VISIBLE);
             CommentAdapter commentAdapter = new CommentAdapter(PostDetalheActivity.this, post.getComments());
             commentList.setAdapter(commentAdapter);
@@ -201,7 +217,7 @@ public class PostDetalheActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == android.R.id.home){
+        if (id == android.R.id.home) {
             finish();
         }
         return true;
@@ -216,7 +232,7 @@ public class PostDetalheActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TransitionManager.beginDelayedTransition(mRoot, new Slide());
             tvDescription.setVisibility(View.INVISIBLE);
             txtContent.setVisibility(View.INVISIBLE);
@@ -224,7 +240,9 @@ public class PostDetalheActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    /** Implementação de botão de voltar*/
+    /**
+     * Implementação de botão de voltar
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -242,12 +260,49 @@ public class PostDetalheActivity extends AppCompatActivity {
     }
 
 
-    public  boolean getConnection() {
+    public boolean getConnection() {
         boolean conectado;
         ConnectivityManager conectivtyManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         conectado = conectivtyManager.getActiveNetworkInfo() != null
                 && conectivtyManager.getActiveNetworkInfo().isAvailable()
                 && conectivtyManager.getActiveNetworkInfo().isConnected();
         return conectado;
+    }
+
+    private class PostHtmlRequest extends AsyncTask<String, Void, Void> {
+        ProgressDialog progressDialog;
+
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                document = Jsoup.connect(params[0]).get();
+
+                elements = document.select(".entry-content iframe");
+
+                element =  elements.toString();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(PostDetalheActivity.this);
+            progressDialog.setTitle("Title");
+            progressDialog.setMessage("Loading...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
+            if (post.getTumbnailLarge() != null) {
+                webviewFeed.loadData(post.getContent().concat(element), "text/html; charset=UTF-8", null);
+            }
+        }
     }
 }
