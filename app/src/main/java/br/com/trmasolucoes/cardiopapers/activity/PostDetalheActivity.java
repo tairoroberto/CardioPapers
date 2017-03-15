@@ -1,5 +1,6 @@
 package br.com.trmasolucoes.cardiopapers.activity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,6 +20,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -67,6 +71,7 @@ public class PostDetalheActivity extends AppCompatActivity {
     private Document document;
     private Elements elements;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TRANSITIONS
@@ -74,46 +79,15 @@ public class PostDetalheActivity extends AppCompatActivity {
 
             TransitionInflater inflater = TransitionInflater.from(this);
             Transition transition = inflater.inflateTransition(R.transition.transitions);
-
             getWindow().setSharedElementEnterTransition(transition);
-
-          /*  Transition transition1 = getWindow().getSharedElementEnterTransition();
-            transition1.addListener(new Transition.TransitionListener() {
-                @Override
-                public void onTransitionStart(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionEnd(Transition transition) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        TransitionManager.beginDelayedTransition(mRoot, new Slide());
-                    }
-                }
-
-                @Override
-                public void onTransitionCancel(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionPause(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionResume(Transition transition) {
-
-                }
-            });*/
         }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_detalhe);
 
-        /** Roda o progressbar */
+        /* Roda o progressbar */
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading...");
+        progressDialog.setMessage("Carregando...");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
@@ -130,19 +104,15 @@ public class PostDetalheActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
 
-        if (savedInstanceState != null) {
-            post = savedInstanceState.getParcelable("post");
+        if (getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("post") != null) {
+            post = getIntent().getExtras().getParcelable("post");
         } else {
-            if (getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().getParcelable("post") != null) {
-                post = getIntent().getExtras().getParcelable("post");
-            } else {
-                Toast.makeText(this, "Fail!", Toast.LENGTH_SHORT).show();
-                finish();
-            }
+            Toast.makeText(this, "Fail!", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
-        /** Se tem conexão com a internet apenas mostro um webview */
-        /** Controle de cache para imagem*/
+        /* Se tem conexão com a internet apenas mostro um webview */
+        /* Controle de cache para imagem*/
         OkHttpClient okHttpClient = new OkHttpClient();
         okHttpClient.networkInterceptors().add(new Interceptor() {
             @Override
@@ -170,18 +140,46 @@ public class PostDetalheActivity extends AppCompatActivity {
         webviewFeed.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         webviewFeed.getSettings().setUserAgentString("Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3");
         webviewFeed.getSettings().setAppCacheEnabled(true);
-
+        webviewFeed.getSettings().setJavaScriptEnabled(true);
+        webviewFeed.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        webviewFeed.getSettings().setPluginState(WebSettings.PluginState.ON);
+        webviewFeed.getSettings().setLoadWithOverviewMode(true);
+        webviewFeed.getSettings().setAllowFileAccess(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webviewFeed.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        } else {
+            webviewFeed.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
+        }
 
         webviewFeed.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return false;
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                finish();
+            }
         });
-        WebSettings webSettings = webviewFeed.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        PostHtmlRequest postHtmlRequest = new PostHtmlRequest();
-        postHtmlRequest.execute(post.getGuid());
+
+
+        if (post.getContent().contains("slideshare") || post.getContent().contains("https://www.youtube.com/watch?")){
+            PostHtmlRequest postHtmlRequest = new PostHtmlRequest();
+            webviewFeed.getSettings().setUseWideViewPort(true);
+            webviewFeed.getSettings().setLoadWithOverviewMode(true);
+            postHtmlRequest.execute(post.getGuid());
+        }else {
+            String style = "<style>img{display: inline;height: auto;max-width: 100%;}</style>";
+            webviewFeed.loadData( style + post.getContent(), "text/html; charset=UTF-8", null);
+        }
 
 
         if (post.getComments().size() > 0) {
@@ -189,7 +187,7 @@ public class PostDetalheActivity extends AppCompatActivity {
             CommentAdapter commentAdapter = new CommentAdapter(PostDetalheActivity.this, post.getComments());
             commentList.setAdapter(commentAdapter);
 
-            /** Mede o tamnahdo do listview de comentarios para aplicar no layout */
+            /* Mede o tamnahdo do listview de comentarios para aplicar no layout */
             int totalHeight = 0;
             ListAdapter adapter = commentList.getAdapter();
             int lenght = adapter.getCount();
@@ -203,8 +201,6 @@ public class PostDetalheActivity extends AppCompatActivity {
             commentList.setLayoutParams(params);
             commentList.requestLayout();
         }
-
-        progressDialog.dismiss();
     }
 
 
@@ -227,7 +223,29 @@ public class PostDetalheActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("post", post);
+        //outState.putParcelable("post", post);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        webviewFeed.onPause();
+        webviewFeed.pauseTimers();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        webviewFeed.resumeTimers();
+        webviewFeed.onResume();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        webviewFeed.destroy();
+        webviewFeed = null;
+        super.onDestroy();
     }
 
     @Override
@@ -270,8 +288,6 @@ public class PostDetalheActivity extends AppCompatActivity {
     }
 
     private class PostHtmlRequest extends AsyncTask<String, Void, Void> {
-        ProgressDialog progressDialog;
-
         @Override
         protected Void doInBackground(String... params) {
             try {
@@ -290,19 +306,13 @@ public class PostDetalheActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(PostDetalheActivity.this);
-            progressDialog.setTitle("Title");
-            progressDialog.setMessage("Loading...");
-            progressDialog.setIndeterminate(false);
             progressDialog.show();
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             progressDialog.dismiss();
-            if (post.getTumbnailLarge() != null) {
-                webviewFeed.loadData(post.getContent().concat(element), "text/html; charset=UTF-8", null);
-            }
+            webviewFeed.loadData(post.getContent().concat(element), "text/html; charset=UTF-8", null);
         }
     }
 }

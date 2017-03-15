@@ -123,6 +123,7 @@ public class HomeActivity extends AppCompatActivity {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         edtSearch = (AutoCompleteTextView) findViewById(R.id.edtSearch);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
 
         ArrayAdapter<String> adapterAutoComplete = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, COUNTRIES);
         edtSearch.setAdapter(adapterAutoComplete);
@@ -189,7 +190,7 @@ public class HomeActivity extends AppCompatActivity {
         postDAO = new PostDAO(HomeActivity.this);
         postCommentDAO = new PostCommentDAO(HomeActivity.this);
         categoryDAO = new CategoryDAO(HomeActivity.this);
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_list);
+
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
@@ -265,13 +266,9 @@ public class HomeActivity extends AppCompatActivity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
                         View post_img = findViewById(R.id.img_post_detalhe);
-                        View post_title = findViewById(R.id.txt_title);
-                        View post_date = findViewById(R.id.txt_date);
 
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(HomeActivity.this,
-                                Pair.create(post_img, "post_img"),
-                                Pair.create(post_title, "post_title"),
-                                Pair.create(post_date, "post_date"));
+                                Pair.create(post_img, "post_img"));
 
                         startActivity(intent, options.toBundle());
                     } else {
@@ -291,7 +288,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("posts", (ArrayList<Post>) posts);
+        //outState.putParcelableArrayList("posts", (ArrayList<Post>) posts);
         super.onSaveInstanceState(outState);
     }
 
